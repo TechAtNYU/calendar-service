@@ -1,0 +1,14 @@
+{
+  "name": "techatnyu-calendar",
+  "version": "1.0.0",
+  "description": "TechatNYU Calendar Server",
+  "private": true,
+  "author": "@techatnyu",
+  "main": "calendar.js",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "dependencies": {
+    "ical-generator": "^0.1.10"
+  }
+}
