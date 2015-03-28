@@ -2,9 +2,9 @@ var ical = require('ical-generator');
 var http = require('http');
 var request = require('request');
 var cal = ical();
- 
+
 cal.setDomain('api.tnyu.org').setName('Events');
- 
+
 request({url: 'https://api.tnyu.org/v2/events', rejectUnauthorized: false}, function(err, res, body) {
     if (!err && res.statusCode == 200) {
         var events = JSON.parse(body).data;
@@ -15,15 +15,19 @@ request({url: 'https://api.tnyu.org/v2/events', rejectUnauthorized: false}, func
 function addEvent(event) {
     var prepend = ""
       , status  = event.links.status && event.links.status.linkage && event.links.status.linkage.id;
-    
+
+    // if the event doesn't have a start and end time, which
+    // (unbelievably) can happen, as such is human error, just skip it.
+    if(!event.startDateTime || !event.endDateTime) return;
+
     // this is a draft event, so skip it.
     if(status === "54837a0ef07bddf3776c79da") return;
-     
+
     // if it's a canceled event, add [Canceled] to the title
     if(status === "54837a0ec8d83b0e17d7b009") {
       prepend = "[Canceled] ";
     }
-    
+
     cal.addEvent({
         start: new Date(event.startDateTime),
         end: new Date(event.endDateTime),
