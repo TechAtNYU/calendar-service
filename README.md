@@ -1,4 +1,7 @@
 # calendar-server
+
+[![Circle CI](https://circleci.com/gh/TechAtNYU/calendar-service/tree/master.svg?style=svg)](https://circleci.com/gh/TechAtNYU/calendar-service/tree/master)
+
 Serves .ics files (i.e. calendar feeds) generated using the events in the Tech@NYU API.
 
 # To Do
