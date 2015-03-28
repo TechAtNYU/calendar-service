@@ -13,13 +13,14 @@ request({url: 'https://api.tnyu.org/v2/events', rejectUnauthorized: false}, func
 });
 
 function addEvent(event) {
-    var prepend = "";
+    var prepend = ""
+      , status  = event.links.status && event.links.status.linkage && event.links.status.linkage.id;
     
     // this is a draft event, so skip it.
-    if(event.links.status.linkage.id === "54837a0ef07bddf3776c79da") return;
+    if(status === "54837a0ef07bddf3776c79da") return;
      
     // if it's a canceled event, add [Canceled] to the title
-    if(event.link.status.linkage.id === "54837a0ec8d83b0e17d7b009") {
+    if(status === "54837a0ec8d83b0e17d7b009") {
       prepend = "[Canceled] ";
     }
     
