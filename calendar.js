@@ -24,4 +24,6 @@ function addEvent(event) {
 
 http.createServer(function(req, res) {
     cal.serve(res);
-}).listen(9999, 'localhost');
+}).listen(9999, '0.0.0.0', function(){
+    console.log('Server running at http://127.0.0.1:9999/');
+});
