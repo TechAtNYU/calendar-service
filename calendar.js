@@ -3,7 +3,7 @@ var http = require('http');
 var request = require('request');
 var cal = ical();
 
-cal.setDomain('api.tnyu.org').setName('Events');
+cal.setDomain('techatnyu.org').setName('Tech@NYU');
 
 request({url: 'https://api.tnyu.org/v2/events', rejectUnauthorized: false}, function(err, res, body) {
     if (!err && res.statusCode == 200) {
