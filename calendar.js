@@ -83,8 +83,7 @@ var addEvent = function(event) {
             // DesignDays, DemoDays, AfterHours events add to feeds: Design feed
             if(teamsArray[event.links.teams.linkage[i].id] == 'Design Days' 
                 || teamsArray[event.links.teams.linkage[i].id] == 'After Hours'
-                || teamsArray[event.links.teams.linkage[i].id] == 'Demo Days'
-            ){
+                || teamsArray[event.links.teams.linkage[i].id] == 'Demo Days'){
                 DesignFeed.addEvent({
                     start: new Date(event.startDateTime),
                     end: new Date(event.endDateTime),
