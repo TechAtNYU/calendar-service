@@ -1,6 +1,6 @@
 var ical = require('ical-generator');
 var http = require('http');
-var request = require('request');
+var request = require('request-promise');
 
 // Feed for the e-board
 var MasterFeed = ical();
@@ -24,17 +24,37 @@ EntrepreneurshipFeed.setDomain('techatnyu.org').setName('Tech@NYU Entrepreneursh
 
 // Prep teams array
 var teamIdsToRoleNames = {};
-request({url: 'https://api.tnyu.org/v1.0/teams', rejectUnauthorized: false}, function(err, res, body) {
-    if (!err && res.statusCode == 200) {
-        var teams = JSON.parse(body).teams;
+request({url: 'https://api.tnyu.org/v1.0/teams', rejectUnauthorized: false})
+    .then(function(teamsBody) {
+        var teams = JSON.parse(teamsBody).teams;
         for (var i = 0; i < teams.length; i++) {
             var currentTeam = teams[i];
             teamIdsToRoleNames[currentTeam.id] = currentTeam.roleName;
         };
-    }
-});
 
-var addEvent = function (event) {
+        return request({url: 'https://api.tnyu.org/v2/events', rejectUnauthorized: false});
+    }).then(function(eventsBody) {
+        var events = JSON.parse(body).data;
+        events.forEach(addEvent);
+    }).then(function() {
+        http.createServer(function(req, res) {
+            if(req.url == '/') {
+                GeneralFeed.serve(res);
+            } else if(req.url == '/eboard') {
+                MasterFeed.serve(res);
+            } else if(req.url == '/design') {
+                DesignFeed.serve(res);
+            } else if(req.url == '/programming') {
+                ProgrammingFeed.serve(res);
+            } else if(req.url = '/entrepreneurship') {
+                EntrepreneurshipFeed.serve(res);
+            }
+        }).listen(9999, '0.0.0.0', function(){
+            console.log('Server running at http://127.0.0.1:9999/');
+        });
+    });
+
+function addEvent(event) {
     var status = event.links.status && event.links.status.linkage && event.links.status.linkage.id;
 
     // if the event doesn't have a start and end time, which
@@ -108,27 +128,3 @@ function apiEventToFeedObject(event) {
         url: event.rsvpUrl || ''
     };
 }
-
-request({url: 'https://api.tnyu.org/v2/events', rejectUnauthorized: false}, function(err, res, body) {
-    if (!err && res.statusCode == 200) {
-        var events = JSON.parse(body).data;
-        events.forEach(addEvent);
-    }
-});
-
-http.createServer(function(req, res) {
-    console.log(req.url);
-    if(req.url == '/') {
-        GeneralFeed.serve(res);
-    } else if(req.url == '/eboard') {
-        MasterFeed.serve(res);
-    } else if(req.url == '/design') {
-        DesignFeed.serve(res);
-    } else if(req.url == '/programming') {
-        ProgrammingFeed.serve(res);
-    } else if(req.url = '/entrepreneurship') {
-        EntrepreneurshipFeed.serve(res);
-    }
-}).listen(9999, '0.0.0.0', function(){
-    console.log('Server running at http://127.0.0.1:9999/');
-});
