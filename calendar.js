@@ -34,45 +34,23 @@ request({url: 'https://api.tnyu.org/v1.0/teams', rejectUnauthorized: false}, fun
     }
 });
 
-var addEvent = function(event) {
-    var prepend = ''
-      , status  = event.links.status && event.links.status.linkage && event.links.status.linkage.id;
+var addEvent = function (event) {
+    var status = event.links.status && event.links.status.linkage && event.links.status.linkage.id;
 
     // if the event doesn't have a start and end time, which
     // (unbelievably) can happen, as such is human error, just skip it.
     if(!event.startDateTime || !event.endDateTime) return;
 
-
-    // (Canceled events should perhaps be included, but 
-    // their title and description should very clearly 
-    // indicate that they’re calenceled.)
-    // if it's a canceled event, add [Canceled] to the title
-    if(status === '54837a0ec8d83b0e17d7b009') {
-      prepend = '[Canceled] ';
-    }
-
     // E-board feed
     // A master calendar feed, which includes all our events, 
     // including internal and draft events. This will replace 
     // the internal Google calendar.
-    MasterFeed.addEvent({
-        start: new Date(event.startDateTime),
-        end: new Date(event.endDateTime),
-        summary: prepend + (event.shortTitle || event.title || ('Tech@NYU Event')),
-        description: event.description || event.details,
-        url: event.rsvpUrl || ''
-    });
+    MasterFeed.addEvent(apiEventToFeedObject(event));
 
     // A public calendar feed, which is the master calendar 
     // minus internal and draft events. 
     if(!event.isInternal && status !== '54837a0ef07bddf3776c79da') {
-        GeneralFeed.addEvent({
-            start: new Date(event.startDateTime),
-            end: new Date(event.endDateTime),
-            summary: prepend + (event.shortTitle || event.title || ('Tech@NYU Event')),
-            description: event.description || event.details,
-            url: event.rsvpUrl || ''
-        });
+        GeneralFeed.addEvent(apiEventToFeedObject(event));
     }
 
     // Starting filters
@@ -82,37 +60,19 @@ var addEvent = function(event) {
             if(teamIdsToRoleNames[event.links.teams.linkage[i].id] == 'DESIGN_DAYS'
                 || teamIdsToRoleNames[event.links.teams.linkage[i].id] == 'AFTER_HOURS'
                 || teamIdsToRoleNames[event.links.teams.linkage[i].id] == 'DEMO_DAYS'){
-                DesignFeed.addEvent({
-                    start: new Date(event.startDateTime),
-                    end: new Date(event.endDateTime),
-                    summary: prepend + (event.shortTitle || event.title || ('Tech@NYU Event')),
-                    description: event.description || event.details,
-                    url: event.rsvpUrl || ''
-                });
+                DesignFeed.addEvent(apiEventToFeedObject(event));
             }
 
             // DemoDays, HackDays, AfterHours events add to feeds: Programming
             if(teamIdsToRoleNames[event.links.teams.linkage[i].id] == 'DEMO_DAYS'
                 || teamIdsToRoleNames[event.links.teams.linkage[i].id] == 'AFTER_HOURS'
                 || teamIdsToRoleNames[event.links.teams.linkage[i].id] == 'HACK_DAYS'){
-                ProgrammingFeed.addEvent({
-                    start: new Date(event.startDateTime),
-                    end: new Date(event.endDateTime),
-                    summary: prepend + (event.shortTitle || event.title || ('Tech@NYU Event')),
-                    description: event.description || event.details,
-                    url: event.rsvpUrl || ''
-                });
+                ProgrammingFeed.addEvent(apiEventToFeedObject(event));
             }
 
             // AfterHours events add to the feed: Entrepreneurship
             if(teamIdsToRoleNames[event.links.teams.linkage[i].id] == 'AFTER_HOURS'){
-                EntrepreneurshipFeed.addEvent({
-                    start: new Date(event.startDateTime),
-                    end: new Date(event.endDateTime),
-                    summary: prepend + (event.shortTitle || event.title || ('Tech@NYU Event')),
-                    description: event.description || event.details,
-                    url: event.rsvpUrl || ''
-                });
+                EntrepreneurshipFeed.addEvent(apiEventToFeedObject(event));
             }
 
             // Special Case:
@@ -121,17 +81,32 @@ var addEvent = function(event) {
                 // events hosted only by the startup week team
                 // (i.e. not sw + design or sw + hack, but only sw).
                 if(event.links.teams.linkage.length == 1) {
-                    EntrepreneurshipFeed.addEvent({
-                        start: new Date(event.startDateTime),
-                        end: new Date(event.endDateTime),
-                        summary: prepend + (event.shortTitle || event.title || ('Tech@NYU Event')),
-                        description: event.description || event.details,
-                        url: event.rsvpUrl || ''
-                    });
+                    EntrepreneurshipFeed.addEvent(apiEventToFeedObject(event));
                 }
             }
         };
     }
+}
+
+/**
+ * Maps the JSON for an event from our API to an object usable by the ical lib.
+ */
+function apiEventToFeedObject(event) {
+    var status = event.links.status && event.links.status.linkage && event.links.status.linkage.id;
+    var prepend = '';
+
+    // (Canceled events, if included, need to say [Canceled] in their title.
+    if(status === '54837a0ec8d83b0e17d7b009') {
+        prepend = '[Canceled] ';
+    }
+
+    return {
+        start: new Date(event.startDateTime),
+        end: new Date(event.endDateTime),
+        summary: prepend + (event.shortTitle || event.title || ('Tech@NYU Event')),
+        description: event.description || event.details,
+        url: event.rsvpUrl || ''
+    };
 }
 
 request({url: 'https://api.tnyu.org/v2/events', rejectUnauthorized: false}, function(err, res, body) {
