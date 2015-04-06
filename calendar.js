@@ -4,23 +4,23 @@ var request = require('request');
 
 // Feed for the e-board
 var MasterFeed = ical();
-MasterFeed.setDomain('techatnyu.org').setName('Tech@NYU E-board Feed');
+MasterFeed.setDomain('techatnyu.org').setName('Tech@NYU E-board Calendar');
 
 // General Feed for everyone
 var GeneralFeed = ical();
-GeneralFeed.setDomain('techatnyu.org').setName('Tech@NYU Feed');
+GeneralFeed.setDomain('techatnyu.org').setName('Tech@NYU Calendar');
 
 // Feed for design peeps
 var DesignFeed = ical();
-DesignFeed.setDomain('techatnyu.org').setName('Tech@NYU DesignFeed Feed');
+DesignFeed.setDomain('techatnyu.org').setName('Tech@NYU Design Events');
 
 // Feed for programming peeps
 var ProgrammingFeed = ical();
-ProgrammingFeed.setDomain('techatnyu.org').setName('Tech@NYU Programming Feed');
+ProgrammingFeed.setDomain('techatnyu.org').setName('Tech@NYU Programming Events');
 
 // Feed for entrepreneurship peeps
 var EntrepreneurshipFeed = ical();
-EntrepreneurshipFeed.setDomain('techatnyu.org').setName('Tech@NYU Entrepreneurship Feed');
+EntrepreneurshipFeed.setDomain('techatnyu.org').setName('Tech@NYU Entrepreneurship Events');
 
 // Fill in 
 var teamsArray = [];
