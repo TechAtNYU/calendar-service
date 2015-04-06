@@ -42,8 +42,6 @@ var addEvent = function(event) {
     // (unbelievably) can happen, as such is human error, just skip it.
     if(!event.startDateTime || !event.endDateTime) return;
 
-    // this is a draft event, so skip it.
-    if(status === '54837a0ef07bddf3776c79da') return;
 
     // (Canceled events should perhaps be included, but 
     // their title and description should very clearly 
@@ -67,7 +65,7 @@ var addEvent = function(event) {
 
     // A public calendar feed, which is the master calendar 
     // minus internal and draft events. 
-    if(!event.isInternal){
+    if(!event.isInternal && status !== '54837a0ef07bddf3776c79da') {
         GeneralFeed.addEvent({
             start: new Date(event.startDateTime),
             end: new Date(event.endDateTime),
