@@ -62,13 +62,13 @@ function addEvent(event) {
     if(!event.startDateTime || !event.endDateTime) return;
 
     // E-board feed
-    // A master calendar feed, which includes all our events, 
-    // including internal and draft events. This will replace 
+    // A master calendar feed, which includes all our events,
+    // including internal and draft events. This will replace
     // the internal Google calendar.
     MasterFeed.addEvent(apiEventToFeedObject(event));
 
-    // A public calendar feed, which is the master calendar 
-    // minus internal and draft events. 
+    // A public calendar feed, which is the master calendar
+    // minus internal and draft events.
     if(!event.isInternal && status !== '54837a0ef07bddf3776c79da') {
         GeneralFeed.addEvent(apiEventToFeedObject(event));
     }
