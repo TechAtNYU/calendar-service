@@ -76,7 +76,7 @@ var addEvent = function(event) {
     }
 
     // Starting filters
-    if(event.links.teams && event.links.teams.linkage){
+    else if(event.links.teams && event.links.teams.linkage){
         for (var i = 0; i < event.links.teams.linkage.length; i++) {
             // DesignDays, DemoDays, AfterHours events add to feeds: Design feed
             if(teamsArray[event.links.teams.linkage[i].id] == 'Design Days' 
