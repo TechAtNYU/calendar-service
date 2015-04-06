@@ -29,7 +29,7 @@ request({url: 'https://api.tnyu.org/v1.0/teams', rejectUnauthorized: false}, fun
         var teams = JSON.parse(body).teams;
         for (var i = 0; i < teams.length; i++) {
             var currentTeam = teams[i];
-            teamsArray[currentTeam.id] = currentTeam.name;
+            teamsArray[currentTeam.id] = currentTeam.roleName;
         };
     }
 });
@@ -79,9 +79,9 @@ var addEvent = function(event) {
     else if(event.links.teams && event.links.teams.linkage){
         for (var i = 0; i < event.links.teams.linkage.length; i++) {
             // DesignDays, DemoDays, AfterHours events add to feeds: Design feed
-            if(teamsArray[event.links.teams.linkage[i].id] == 'Design Days' 
-                || teamsArray[event.links.teams.linkage[i].id] == 'After Hours'
-                || teamsArray[event.links.teams.linkage[i].id] == 'Demo Days'){
+            if(teamsArray[event.links.teams.linkage[i].id] == 'DESIGN_DAYS'
+                || teamsArray[event.links.teams.linkage[i].id] == 'AFTER_HOURS'
+                || teamsArray[event.links.teams.linkage[i].id] == 'DEMO_DAYS'){
                 DesignFeed.addEvent({
                     start: new Date(event.startDateTime),
                     end: new Date(event.endDateTime),
@@ -92,9 +92,9 @@ var addEvent = function(event) {
             }
 
             // DemoDays, HackDays, AfterHours events add to feeds: Programming
-            if(teamsArray[event.links.teams.linkage[i].id] == 'Demo Days'
-                || teamsArray[event.links.teams.linkage[i].id] == 'After Hours'
-                || teamsArray[event.links.teams.linkage[i].id] == 'Hack Days'){
+            if(teamsArray[event.links.teams.linkage[i].id] == 'DEMO_DAYS'
+                || teamsArray[event.links.teams.linkage[i].id] == 'AFTER_HOURS'
+                || teamsArray[event.links.teams.linkage[i].id] == 'HACK_DAYS'){
                 ProgrammingFeed.addEvent({
                     start: new Date(event.startDateTime),
                     end: new Date(event.endDateTime),
@@ -105,7 +105,7 @@ var addEvent = function(event) {
             }
 
             // AfterHours events add to the feed: Entrepreneurship
-            if(teamsArray[event.links.teams.linkage[i].id] == 'After Hours'){
+            if(teamsArray[event.links.teams.linkage[i].id] == 'AFTER_HOURS'){
                 EntrepreneurshipFeed.addEvent({
                     start: new Date(event.startDateTime),
                     end: new Date(event.endDateTime),
@@ -117,8 +117,8 @@ var addEvent = function(event) {
 
             // Special Case:
             // Startupweek events add to feeds: Entrepreneurship
-            if(teamsArray[event.links.teams.linkage[i].id] == 'Startup Week'){
-                // events hosted only by the startup week team 
+            if(teamsArray[event.links.teams.linkage[i].id] == 'STARTUP_WEEK'){
+                // events hosted only by the startup week team
                 // (i.e. not sw + design or sw + hack, but only sw).
                 if(event.links.teams.linkage.length == 1) {
                     EntrepreneurshipFeed.addEvent({
