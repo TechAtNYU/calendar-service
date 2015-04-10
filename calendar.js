@@ -24,7 +24,7 @@ EntrepreneurshipFeed.setDomain('techatnyu.org').setName('Tech@NYU Entrepreneursh
 
 // Prep teams array
 var teamIdsToRoleNames = {};
-request({url: 'https://api.tnyu.org/v2/teams', rejectUnauthorized: false})
+request({url: 'https://api.tnyu.org/v2/teams?include=memberships', rejectUnauthorized: false})
     .then(function(teamsBody) {
         var teams = JSON.parse(teamsBody).data;
         for (var i = 0; i < teams.length; i++) {
