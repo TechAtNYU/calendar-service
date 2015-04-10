@@ -34,7 +34,7 @@ request({url: 'https://api.tnyu.org/v2/teams?include=memberships', rejectUnautho
 
         return request({url: 'https://api.tnyu.org/v2/events', rejectUnauthorized: false});
     }).then(function(eventsBody) {
-        var events = JSON.parse(body).data;
+        var events = JSON.parse(eventsBody).data;
         events.forEach(addEvent);
     }).then(function() {
         http.createServer(function(req, res) {
