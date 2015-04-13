@@ -33,23 +33,16 @@ request({url: 'https://api.tnyu.org/v2/teams?include=memberships', rejectUnautho
             teamIdsToRoleNames[currentTeam.id] = currentTeam.roleName;
         }
 
-        return request({
-            url: 'https://api.tnyu.org/v1.0/venues', 
-            rejectUnauthorized: false, 
-            'headers': {
-                'x-api-key': "E]PzXKhhH5PVBvSmKlKqSZXt$li5J4SjS't"
-            }
-        });
-    }).then(function(venuesBody) {
-        var venues = JSON.parse(venuesBody).venues;
-        for (var i = 0; i < venues.length; i++) {
-            var currentVenue = venues[i];
-            venueIdsToVenueAddresses[currentVenue.id] = currentVenue;
-        }
-
-        return request({url: 'https://api.tnyu.org/v2/events', rejectUnauthorized: false});
+        return request({url: 'https://api.tnyu.org/v2/events?include=venue', rejectUnauthorized: false});
     }).then(function(eventsBody) {
         var events = JSON.parse(eventsBody).data;
+        var venues = JSON.parse(eventsBody).included;
+        for (var i = 0; i < venues.length; i++) {
+            var currentVenue = venues[i];
+            if(currentVenue.type == "venues"){
+                venueIdsToVenueAddresses[currentVenue.id] = currentVenue;
+            }
+        }
         events.forEach(addEvent);
     }).then(function() {
         http.createServer(function(req, res) {
