@@ -24,13 +24,28 @@ EntrepreneurshipFeed.setDomain('techatnyu.org').setName('Tech@NYU Entrepreneursh
 
 // Prep teams array
 var teamIdsToRoleNames = {};
+var venueIdsToVenueAddresses = {};
 request({url: 'https://api.tnyu.org/v2/teams?include=memberships', rejectUnauthorized: false})
     .then(function(teamsBody) {
         var teams = JSON.parse(teamsBody).data;
         for (var i = 0; i < teams.length; i++) {
             var currentTeam = teams[i];
             teamIdsToRoleNames[currentTeam.id] = currentTeam.roleName;
-        };
+        }
+
+        return request({
+            url: 'https://api.tnyu.org/v1.0/venues', 
+            rejectUnauthorized: false, 
+            'headers': {
+                'x-api-key': "E]PzXKhhH5PVBvSmKlKqSZXt$li5J4SjS't"
+            }
+        });
+    }).then(function(venuesBody) {
+        var venues = JSON.parse(venuesBody).venues;
+        for (var i = 0; i < venues.length; i++) {
+            var currentVenue = venues[i];
+            venueIdsToVenueAddresses[currentVenue.id] = currentVenue;
+        }
 
         return request({url: 'https://api.tnyu.org/v2/events', rejectUnauthorized: false});
     }).then(function(eventsBody) {
@@ -112,6 +127,10 @@ function addEvent(event) {
  * Maps the JSON for an event from our API to an object usable by the ical lib.
  */
 function apiEventToFeedObject(event) {
+    var currentVenue = '';
+    if(event && event.links && event.links.venue && event.links.venue.linkage){
+        currentVenue = venueIdsToVenueAddresses[event.links.venue.linkage.id].address;
+    }
     var status = event.links.status && event.links.status.linkage && event.links.status.linkage.id;
     var prepend = '';
 
@@ -125,6 +144,7 @@ function apiEventToFeedObject(event) {
         end: new Date(event.endDateTime),
         summary: prepend + (event.shortTitle || event.title || ('Tech@NYU Event')),
         description: event.description || event.details,
-        url: event.rsvpUrl || ''
+        url: event.rsvpUrl || '',
+        location: currentVenue,
     };
 }
