@@ -121,10 +121,6 @@ function addEvent(event) {
  * Maps the JSON for an event from our API to an object usable by the ical lib.
  */
 function apiEventToFeedObject(event) {
-    var currentVenue = '';
-    if(event && event.links && event.links.venue && event.links.venue.linkage){
-        currentVenue = venueIdsToVenueAddresses[event.links.venue.linkage.id].address;
-    }
     var status = event.links.status && event.links.status.linkage && event.links.status.linkage.id;
     var prepend = '';
 
@@ -133,12 +129,17 @@ function apiEventToFeedObject(event) {
         prepend = '[Canceled] ';
     }
 
-    return {
+    var result = {
         start: new Date(event.startDateTime),
         end: new Date(event.endDateTime),
         summary: prepend + (event.shortTitle || event.title || ('Tech@NYU Event')),
         description: event.description || event.details,
-        url: event.rsvpUrl || '',
-        location: currentVenue,
+        url: event.rsvpUrl || ''
     };
+    
+    if(event.links && event.links.venue && event.links.venue.linkage){
+        result.location = venueIdsToVenueAddresses[event.links.venue.linkage.id].address;
+    }
+    
+    return result;
 }
