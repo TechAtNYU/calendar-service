@@ -100,7 +100,8 @@ function addEvent(event) {
             }
 
             // AfterHours events add to the feed: Entrepreneurship
-            if(teamIdsToRoleNames[event.links.teams.linkage[i].id] == 'AFTER_HOURS'){
+            if(teamIdsToRoleNames[event.links.teams.linkage[i].id] == 'AFTER_HOURS'
+                || teamIdsToRoleNames[event.links.teams.linkage[i].id] == 'DEMO_DAYS'){
                 EntrepreneurshipFeed.addEvent(apiEventToFeedObject(event));
             }
 
