@@ -25,6 +25,7 @@ EntrepreneurshipFeed.setDomain('techatnyu.org').setName('Tech@NYU Entrepreneursh
 // Prep teams array
 var teamIdsToRoleNames = {};
 var venueIdsToVenueAddresses = {};
+var peopleIdsToPeople = {};
 request({url: 'https://api.tnyu.org/v2/teams?include=memberships', rejectUnauthorized: false})
     .then(function(teamsBody) {
         var teams = JSON.parse(teamsBody).data;
@@ -32,16 +33,26 @@ request({url: 'https://api.tnyu.org/v2/teams?include=memberships', rejectUnautho
             var currentTeam = teams[i];
             teamIdsToRoleNames[currentTeam.id] = currentTeam.roleName;
         }
-
-        return request({url: 'https://api.tnyu.org/v2/events?include=venue', rejectUnauthorized: false});
+        return request({
+            url: 'https://api.tnyu.org/v2/events?include=venue,addedBy', 
+            rejectUnauthorized: false,
+            'headers': {
+                'x-api-key': process.env.ApiKey,
+                'accept': 'application/vnd.api+json'
+            }
+        });
     }).then(function(eventsBody) {
         var JSONBody = JSON.parse(eventsBody);
         var events = JSONBody.data;
-        var venues = JSONBody.included;
-        for (var i = 0; i < venues.length; i++) {
-            var currentVenue = venues[i];
-            if(currentVenue.type == "venues"){
-                venueIdsToVenueAddresses[currentVenue.id] = currentVenue;
+        var included = JSONBody.included;
+        for (var i = 0; i < included.length; i++) {
+            var currentIncluded = included[i];
+            if(currentIncluded.type == "venues"){
+                venueIdsToVenueAddresses[currentIncluded.id] = currentIncluded;
+            } else if(currentIncluded.type =="people"){
+                if(!peopleIdsToPeople[currentIncluded.id]){
+                    peopleIdsToPeople[currentIncluded.id] = currentIncluded;
+                }
             }
         }
         events.forEach(addEvent);
@@ -141,6 +152,12 @@ function apiEventToFeedObject(event) {
     if(event.links && event.links.venue && event.links.venue.linkage){
         result.location = venueIdsToVenueAddresses[event.links.venue.linkage.id].address;
     }
-    
+
+    if(event.links && event.links.addedBy && event.links.addedBy.linkage){
+        var addedByPerson = peopleIdsToPeople[event.links.addedBy.linkage.id];
+        if(addedByPerson && addedByPerson.name && addedByPerson.contact.email){
+            result.organizer = addedByPerson.name + '<' + addedByPerson.contact.email + '>';
+        }
+    }
     return result;
 }
