@@ -156,7 +156,7 @@ function apiEventToFeedObject(event) {
     if(event.links && event.links.addedBy && event.links.addedBy.linkage){
         var addedByPerson = peopleIdsToPeople[event.links.addedBy.linkage.id];
         if(addedByPerson && addedByPerson.name && addedByPerson.contact.email){
-            result.organizer = addedByPerson.name + '<' + addedByPerson.contact.email + '>';
+            result.organizer = addedByPerson.name + ' <' + addedByPerson.contact.email + '>';
         }
     }
     return result;
