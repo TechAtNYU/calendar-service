@@ -40,22 +40,22 @@ request({url: 'https://api.tnyu.org/v2/teams?include=memberships', rejectUnautho
         var venues = JSONBody.included;
         for (var i = 0; i < venues.length; i++) {
             var currentVenue = venues[i];
-            if(currentVenue.type == "venues"){
+            if(currentVenue.type === "venues"){
                 venueIdsToVenueAddresses[currentVenue.id] = currentVenue;
             }
         }
         events.forEach(addEvent);
     }).then(function() {
         http.createServer(function(req, res) {
-            if(req.url == '/') {
+            if(req.url === '/') {
                 GeneralFeed.serve(res);
-            } else if(req.url == '/eboard') {
+            } else if(req.url === '/eboard') {
                 MasterFeed.serve(res);
-            } else if(req.url == '/design') {
+            } else if(req.url === '/design') {
                 DesignFeed.serve(res);
-            } else if(req.url == '/programming') {
+            } else if(req.url === '/programming') {
                 ProgrammingFeed.serve(res);
-            } else if(req.url = '/entrepreneurship') {
+            } else if(req.url === '/entrepreneurship') {
                 EntrepreneurshipFeed.serve(res);
             }
         }).listen(9999, '0.0.0.0', function(){
@@ -86,35 +86,35 @@ function addEvent(event) {
     else if(event.links.teams && event.links.teams.linkage){
         for (var i = 0; i < event.links.teams.linkage.length; i++) {
             // DesignDays, DemoDays, AfterHours events add to feeds: Design feed
-            if(teamIdsToRoleNames[event.links.teams.linkage[i].id] == 'DESIGN_DAYS'
-                || teamIdsToRoleNames[event.links.teams.linkage[i].id] == 'AFTER_HOURS'
-                || teamIdsToRoleNames[event.links.teams.linkage[i].id] == 'DEMO_DAYS'){
+            if(teamIdsToRoleNames[event.links.teams.linkage[i].id] === 'DESIGN_DAYS'
+                || teamIdsToRoleNames[event.links.teams.linkage[i].id] === 'AFTER_HOURS'
+                || teamIdsToRoleNames[event.links.teams.linkage[i].id] === 'DEMO_DAYS'){
                 DesignFeed.addEvent(apiEventToFeedObject(event));
             }
 
             // DemoDays, HackDays, AfterHours events add to feeds: Programming
-            if(teamIdsToRoleNames[event.links.teams.linkage[i].id] == 'DEMO_DAYS'
-                || teamIdsToRoleNames[event.links.teams.linkage[i].id] == 'AFTER_HOURS'
-                || teamIdsToRoleNames[event.links.teams.linkage[i].id] == 'HACK_DAYS'){
+            if(teamIdsToRoleNames[event.links.teams.linkage[i].id] === 'DEMO_DAYS'
+                || teamIdsToRoleNames[event.links.teams.linkage[i].id] === 'AFTER_HOURS'
+                || teamIdsToRoleNames[event.links.teams.linkage[i].id] === 'HACK_DAYS'){
                 ProgrammingFeed.addEvent(apiEventToFeedObject(event));
             }
 
             // AfterHours events add to the feed: Entrepreneurship
-            if(teamIdsToRoleNames[event.links.teams.linkage[i].id] == 'AFTER_HOURS'
-                || teamIdsToRoleNames[event.links.teams.linkage[i].id] == 'DEMO_DAYS'){
+            if(teamIdsToRoleNames[event.links.teams.linkage[i].id] === 'AFTER_HOURS'
+                || teamIdsToRoleNames[event.links.teams.linkage[i].id] === 'DEMO_DAYS'){
                 EntrepreneurshipFeed.addEvent(apiEventToFeedObject(event));
             }
 
             // Special Case:
             // Startupweek events add to feeds: Entrepreneurship
-            if(teamIdsToRoleNames[event.links.teams.linkage[i].id] == 'STARTUP_WEEK'){
+            if(teamIdsToRoleNames[event.links.teams.linkage[i].id] === 'STARTUP_WEEK'){
                 // events hosted only by the startup week team
                 // (i.e. not sw + design or sw + hack, but only sw).
-                if(event.links.teams.linkage.length == 1) {
+                if(event.links.teams.linkage.length === 1) {
                     EntrepreneurshipFeed.addEvent(apiEventToFeedObject(event));
                 }
             }
-        };
+        }
     }
 }
 
