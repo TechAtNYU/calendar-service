@@ -26,7 +26,7 @@ EntrepreneurshipFeed.setDomain('techatnyu.org').setName('Tech@NYU Entrepreneursh
 
 // Prep teams array
 var teamIdsToRoleNames = {};
-var venueIdsToVenueAddresses = {};
+var venueIdsToVenues = {};
 request({url: 'https://api.tnyu.org/v2/teams?include=memberships', rejectUnauthorized: false})
 		.then(function(teamsBody) {
 			var teams = JSON.parse(teamsBody).data;
@@ -43,7 +43,7 @@ request({url: 'https://api.tnyu.org/v2/teams?include=memberships', rejectUnautho
 			for (var i = 0; i < venues.length; i++) {
 				var currentVenue = venues[i];
 				if (currentVenue.type === 'venues') {
-					venueIdsToVenueAddresses[currentVenue.id] = currentVenue;
+					venueIdsToVenues[currentVenue.id] = currentVenue;
 				}
 			}
 			events.forEach(addEvent);
@@ -142,7 +142,7 @@ function apiEventToFeedObject(event) {
 	};
 
 	if (event.links && event.links.venue && event.links.venue.linkage) {
-		result.location = venueIdsToVenueAddresses[event.links.venue.linkage.id].address;
+		result.location = venueIdsToVenues[event.links.venue.linkage.id].attributes.address;
 	}
 
 	return result;
