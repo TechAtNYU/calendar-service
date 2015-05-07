@@ -82,7 +82,7 @@ function addEvent(event) {
 
 	// A public calendar feed, which is the master calendar
 	// minus internal and draft events.
-	if (!event.isInternal && status !== '54837a0ef07bddf3776c79da') {
+	if (!event.attributes.isInternal && status !== '54837a0ef07bddf3776c79da') {
 		GeneralFeed.addEvent(apiEventToFeedObject(event));
 	}
 	// Starting filters
