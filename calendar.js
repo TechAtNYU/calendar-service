@@ -32,7 +32,7 @@ request({url: 'https://api.tnyu.org/v2/teams?include=memberships', rejectUnautho
 			var teams = JSON.parse(teamsBody).data;
 			for (var i = 0; i < teams.length; i++) {
 				var currentTeam = teams[i];
-				teamIdsToRoleNames[currentTeam.id] = currentTeam.roleName;
+				teamIdsToRoleNames[currentTeam.id] = currentTeam.attributes.roleName;
 			}
 
 			return request({url: 'https://api.tnyu.org/v2/events?include=venue', rejectUnauthorized: false});
@@ -70,7 +70,7 @@ function addEvent(event) {
 
 	// if the event doesn't have a start and end time, which
 	// (unbelievably) can happen, as such is human error, just skip it.
-	if (!event.startDateTime || !event.endDateTime) {
+	if (!event.attributes.startDateTime || !event.attributes.endDateTime) {
 		return;
 	}
 
@@ -85,7 +85,6 @@ function addEvent(event) {
 	if (!event.isInternal && status !== '54837a0ef07bddf3776c79da') {
 		GeneralFeed.addEvent(apiEventToFeedObject(event));
 	}
-
 	// Starting filters
 	else if (event.links.teams && event.links.teams.linkage) {
 		for (var i = 0; i < event.links.teams.linkage.length; i++) {
@@ -135,11 +134,11 @@ function apiEventToFeedObject(event) {
 	}
 
 	var result = {
-		start: new Date(event.startDateTime),
-		end: new Date(event.endDateTime),
-		summary: prepend + (event.shortTitle || event.title || ('Tech@NYU Event')),
-		description: event.description || event.details,
-		url: event.rsvpUrl || ''
+		start: new Date(event.attributes.startDateTime),
+		end: new Date(event.attributes.endDateTime),
+		summary: prepend + (event.attributes.shortTitle || event.attributes.title || ('Tech@NYU Event')),
+		description: event.attributes.description || event.attributes.details,
+		url: event.attributes.rsvpUrl || ''
 	};
 
 	if (event.links && event.links.venue && event.links.venue.linkage) {
