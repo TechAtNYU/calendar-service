@@ -16,7 +16,6 @@ dependencies:
 
 test:
   override:
-<<<<<<< HEAD
     - echo "No tests are needed"
 
 deployment:
@@ -24,6 +23,3 @@ deployment:
     branch: master
     commands:
       - turbolift -u $RAXUSER -a $RAXAPIKEY --os-rax-auth $RAXREGION upload -s $HOME/$CIRCLE_PROJECT_REPONAME/calendars -c $CONTAINER
-=======
-    - echo "No tests are needed"
->>>>>>> c08df71... Switching to static
