@@ -10,9 +10,3 @@ machine:
 test:
   override:
     - echo "No tests are needed"
-
-deployment:
-  production:
-    branch: master
-    commands:
-      - ssh $SSHU "cd $DIR && git pull -u origin master && forever restart $ForeverID"
