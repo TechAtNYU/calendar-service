@@ -48,21 +48,11 @@ request({url: 'https://api.tnyu.org/v2/teams?include=memberships', rejectUnautho
 			}
 			events.forEach(addEvent);
 		}).then(function() {
-			http.createServer(function(req, res) {
-				if (req.url === '/') {
-					GeneralFeed.serve(res);
-				} else if (req.url === '/eboard') {
-					MasterFeed.serve(res);
-				} else if (req.url === '/design') {
-					DesignFeed.serve(res);
-				} else if (req.url === '/programming') {
-					ProgrammingFeed.serve(res);
-				} else if (req.url === '/entrepreneurship') {
-					EntrepreneurshipFeed.serve(res);
-				}
-			}).listen(9999, '0.0.0.0', function() {
-				console.log('Server running at http://127.0.0.1:9999/');
-			});
+			GeneralFeed.save("./calendars/general.ics");
+			MasterFeed.save("./calendars/master.ics");
+			DesignFeed.save("./calendars/design.ics");
+			ProgrammingFeed.save("./calendars/programming.ics");
+			EntrepreneurshipFeed.save("./calendars/entrepreneurship.ics");
 		});
 
 function addEvent(event) {
