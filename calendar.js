@@ -137,7 +137,7 @@ function apiEventToFeedObject(event) {
 		start: new Date(event.attributes.startDateTime),
 		end: new Date(event.attributes.endDateTime),
 		summary: prepend + (event.attributes.shortTitle || event.attributes.title || ('Tech@NYU Event')),
-		description: event.attributes.description || event.attributes.details,
+		description: event.attributes.bodyPlain,
 		url: event.attributes.rsvpUrl || ''
 	};
 
