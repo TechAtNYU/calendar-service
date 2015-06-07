@@ -6,6 +6,13 @@ general:
 machine:
   timezone:
     America/Los_Angeles
+  node:
+    version: 
+      0.12.2
+
+dependencies:
+  post:
+    - cd $HOME/$CIRCLE_PROJECT_REPONAME && npm install && node calendar.js
 
 test:
   override:
@@ -15,4 +22,4 @@ deployment:
   production:
     branch: master
     commands:
-      - ssh $SSHU "cd $DIR && git pull -u origin master && forever restart $ForeverID"
+      - turbolift -u $RAXUSER -a $RAXAPIKEY --os-rax-auth $RAXREGION upload -s $HOME/$CIRCLE_PROJECT_REPONAME/calendars -c $CONTAINER
