@@ -27,7 +27,7 @@ EntrepreneurshipFeed.setDomain('techatnyu.org').setName('Tech@NYU Entrepreneursh
 // Prep teams array
 var teamIdsToRoleNames = {};
 var venueIdsToVenues = {};
-request({url: 'https://api.tnyu.org/v2/teams', rejectUnauthorized: false})
+request({url: 'https://api.tnyu.org/v3/teams', rejectUnauthorized: false})
         .then(function(teamsBody) {
             var teams = JSON.parse(teamsBody).data;
             for (var i = 0; i < teams.length; i++) {
@@ -35,7 +35,7 @@ request({url: 'https://api.tnyu.org/v2/teams', rejectUnauthorized: false})
                 teamIdsToRoleNames[currentTeam.id] = currentTeam.attributes.roleName;
             }
 
-            return request({url: 'https://api.tnyu.org/v2/events?include=venue', rejectUnauthorized: false});
+            return request({url: 'https://api.tnyu.org/v3/events?include=venue', rejectUnauthorized: false});
         }).then(function(eventsBody) {
             var JSONBody = JSON.parse(eventsBody);
             var events = JSONBody.data;
@@ -72,7 +72,7 @@ function addEvent(event) {
 
     // A public calendar feed, which is the master calendar
     // minus internal and draft events.
-    if (!event.attributes.isInternal && status !== '54837a0ef07bddf3776c79da') {
+    if (!event.attributes.isInternal && status !== 'draft') {
         GeneralFeed.addEvent(apiEventToFeedObject(event));
     }
     // Starting filters
@@ -115,12 +115,16 @@ function addEvent(event) {
  * Maps the JSON for an event from our API to an object usable by the ical lib.
  */
 function apiEventToFeedObject(event) {
-    var status = event.links.status && event.links.status.linkage && event.links.status.linkage.id;
+    var status = event.attributes.status;
     var prepend = '';
 
     // (Canceled events, if included, need to say [Canceled] in their title.
-    if (status === '54837a0ec8d83b0e17d7b009') {
+    if (status === 'canceled') {
         prepend = '[Canceled] ';
+    }
+
+    if (status === 'draft') {
+        prepend = '[Draft] ';
     }
 
     var result = {
